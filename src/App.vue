@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <h1>okokokoko</h1>
+      <el-button type="primary">主要按钮</el-button>
     <router-view/>
   </div>
 </template>
