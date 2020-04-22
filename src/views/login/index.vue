@@ -38,7 +38,7 @@
 </template>
 
 <script>
-import request from '@/utils/request'
+import { login } from '@/api/user'
 export default {
   name: 'LoginIndex',
   components: {},
@@ -46,8 +46,8 @@ export default {
   data () {
     return {
       user: {
-        moblic: '', // 手机号
-        code: '', // 验证码
+        mobile: '13911111111', // 手机号
+        code: '246810', // 验证码
         agree: false // 是否同意协议
       },
       // checked: true,
@@ -56,7 +56,7 @@ export default {
         // 要验证的数据名称: 规则列表[]
         mobile: [
           { required: true, message: '请输入手机号码', trigger: 'change' },
-          { pattern: /^{1[3|5|7|8|9]\d{9}}$/, message: '请输入正确的手机号码格式', trigger: 'change' }
+          { pattern: /^1[3|5|7|8|9]\d{9}$/, message: '请输入正确的手机号码格式', trigger: 'blur' }
         ],
         code: [
           { required: true, message: '验证码不能为空', trigger: 'change' },
@@ -100,11 +100,13 @@ export default {
       // const user = this.user
       // 开启登录中的 loading
       this.loginLoading = true
-      request({
-        method: 'POST',
-        url: '/mp/v1_0/authorizations',
-        data: this.user
-      }).then(res => {
+
+      // 代码中的请求操作
+      // 1.接口请求可能需要复用
+      // 2.实际工作时,接口非常容易变动改起来麻烦
+      // 3.建议把所有的请求封装成函数统一 到模块中进行管理
+      // 好处:管理维护方便,方便重用
+      login(this.user).then(res => {
         console.log(res)
         this.$message({
           message: '登录成功',
@@ -112,6 +114,10 @@ export default {
         })
         // 关闭loading
         this.loginLoading = false
+        // 跳转到首页 this.$router.push('/')
+        this.$router.push({
+          name: 'home'
+        })
       }).catch(err => {
         console.log('登录失败', err)
         this.$message.error('密码或验证码错误')
