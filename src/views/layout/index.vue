@@ -1,11 +1,39 @@
 <template>
 <el-container class="layout-container">
-  <el-aside class="aside" width="200px">
-      <app-aside class="aside-menu" />
+  <el-aside class="aside" width="auto">
+      <app-aside class="aside-menu" :is-collapse="isCollapse" />
   </el-aside>
   <el-container>
     <el-header class="header">
-      <app-header />
+      <div class="header-container">
+    <div>
+         <i
+         :class="{
+           'el-icon-s-fold': isCollapse,
+           'el-icon-s-unfold': !isCollapse
+           }"
+         @click="isCollapse = !isCollapse"
+         ></i>
+         <span>江苏传智博客</span>
+     </div>
+     <el-dropdown>
+         <div class="avatar-wrap">
+             <img class="avatar" :src="user.photo" alt="">
+             <span>{{ user.name }}</span>
+             <i
+             class="el-icon-arrow-down el-icon--right"
+             ></i>
+         </div>
+       <!-- <span>
+         <i class="el-icon-arrow-down el-icon--right"></i>
+       </span> -->
+       <el-dropdown-menu slot="dropdown">
+         <el-dropdown-item>设置</el-dropdown-item>
+         <!-- 组件默认不识别原生事件 除非内部做了处理 -->
+         <el-dropdown-item @click.native="onLogout">退出</el-dropdown-item>
+     </el-dropdown-menu>
+</el-dropdown>
+ </div>
     </el-header>
     <el-main class="main">
         <!-- 子路由出口 -->
@@ -24,22 +52,53 @@
 
 <script>
 import AppAside from './components/aside'
-import AppHeader from './components/header'
+import { getUserProfile } from '@/api/user'
+// import AppHeader from './components/header'
 export default {
   name: 'LayoutIndex',
   components: {
-    AppAside,
-    AppHeader
+    AppAside
   },
   props: {},
   data () {
-    return {}
+    return {
+      user: {
+        photo: '',
+        name: ''
+      },
+      isCollapse: true // 侧边菜单栏展开状态
+    }
   },
   computed: {},
   watch: {},
-  created () {},
+  created () {
+    this.loadUserProfile()
+  },
   mounted () {},
-  methods: {}
+  methods: {
+    loadUserProfile () {
+      getUserProfile().then(res => {
+        this.user = res.data.data
+      })
+    },
+    onLogout () {
+      this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        // 清除用户登录状态
+        window.localStorage.removeItem('user')
+        // 跳转到登录页面
+        this.$router.push('/login')
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消退出'
+        })
+      })
+    }
+  }
 }
 </script>
 
@@ -54,17 +113,28 @@ export default {
 .aside {
     background-color: #58bcbc;
     .aside-menu {
-        width: 100%
+       height: 100%
     }
 }
-.header {
-    height: 60px;
+.header-container {
+    height: 100%;
+    width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
     border-bottom: 1px solid #ccc;
-
+    .avatar-wrap {
+    display: flex;
+    align-items: center;
+    .avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        margin-right: 10px;
+    }
 }
+}
+
 .main {
     background-color: #3ba07c;
 }

@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import Login from '@/views/login/'
 import Home from '@/views/home/'
 import Layout from '@/views/layout/'
+import Article from '@/views/article/'
 
 Vue.use(VueRouter)
 
@@ -23,6 +24,11 @@ const routes = [
         path: '', // path 为空
         name: 'home',
         component: Home
+      },
+      {
+        path: '/article',
+        name: 'article',
+        component: Article
       }
     ]
   }
@@ -30,6 +36,23 @@ const routes = [
 
 const router = new VueRouter({
   routes
+})
+
+// 路由导航守卫 ,所有页面的导航都会经过这里 守卫页面的导航
+// to：要去的路由信息
+// from：来自哪的路由信息
+// next：放行方法
+router.beforeEach((to, from, next) => {
+  const user = JSON.parse(window.localStorage.getItem('user'))
+  if ((to.path !== '/login')) {
+    if (user) {
+      next()
+    } else {
+      next('./login')
+    }
+  } else {
+    next()
+  }
 })
 
 export default router
