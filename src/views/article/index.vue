@@ -126,13 +126,14 @@
           size="mini"
           icon="el-icon-edit"
           circle
+          @click="$router.push('/publish?id=' + scope.row.id.toString())"
          ></el-button>
         <el-button
           size="mini"
           type="danger"
           icon="el-icon-delete"
           circle
-          @click='onDelArticle(scope.row.id)'
+          @click="onDelArticle(scope.row.id)"
         ></el-button>
       </template>
     </el-table-column>
